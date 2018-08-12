@@ -8,7 +8,7 @@ from importlib import import_module
 # import components.general.observer
 # import components.general.stack
 # from components.general import *
-from soup.champ_names import champ_names_for_packages
+from champ_names import champ_names_for_packages
 
 
 
