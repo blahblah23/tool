@@ -1,5 +1,10 @@
 
 
+
+# linked local to remote so i can "git push"
+# git push -u origin <branchname>
+
+
 from pprint import pprint
 # change cwd to this script
 import os
