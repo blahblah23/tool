@@ -37,13 +37,28 @@ print(kassadin2.E.STACKER.counter)
 #     print(t)
 # pprint(kassadin.E.get_mdmg().__dict__)
 
-pprint(kassadin2.STATS.stats['current_hp'])
+pprint(kassadin2.current_hp)
+pprint(kassadin.current_hp)
+
+
+
+
+kassadin.bonus_ad    =   [[0, 10]]
+
+print('kassadin.ad:', 53.544  + 3.3  * kassadin.base_building_multiplier(11))
+print('kassadin.total_ad:', kassadin.total_ad)
+
+
+
+
+
+
 for __ in range(12):
     kassadin.E.cast()
 
 # pprint(kassadin2.EFFECT_HANDLER.CHAMP)
 # pprint(kassadin2.EFFECT_HANDLER)
-pprint(kassadin2.STATS.stats['current_hp'])
+pprint(kassadin2.current_hp)
 
 
 

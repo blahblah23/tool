@@ -38,7 +38,7 @@ class E(ABS_E):
         ###### subscribe STACKER to all ABILITY_USE
         toSubscribe.append([self.STACKER, getAllChampAbilityUseComponents]) 
     def get_inherent_dmg(self):
-        return 80 + 25 * self.lvlups + 0.7 * self.CHAMP.STATS.stats['ap']
+        return 80 + 25 * self.lvlups + 0.7 * self.CHAMP.ap
     def get_inherent_slow(self):
         return 0.50 + 0.10 * self.lvlups
     def get_mdmg(self):
