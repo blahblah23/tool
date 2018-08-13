@@ -1,8 +1,13 @@
 
 
 
-# linked local to remote so i can "git push"
-# git push -u origin <branchname>
+#   linked local to remote so i can "git push"
+#   git push -u origin <branchname>
+#
+#   Assuming that your remote is set up correctly as origin, you'll do git push -u origin <branchname>.
+#   Where -u is --set-upstream, which sets the remote branch <branchname> that you want to correspond to the local branch you're pushing from.
+
+
 
 
 from pprint import pprint
