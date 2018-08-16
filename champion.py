@@ -93,25 +93,6 @@ class Champion:
         for name in attr_names:
             setattr(self, name, self._get_data(name))
 
-        self.autoclass  =  self._get_data('autoclass')
-        self.ms         =  self._get_data('ms')
-        self.range      =  self._get_data('range')
-        self.ats        =  self._get_data('ats')
-        self.ats_lvl    =  self._get_data('ats_lvl')
-        self.ad         =  self._get_data('ad')
-        self.ad_lvl     =  self._get_data('ad_lvl')
-        self.ar         =  self._get_data('ar')
-        self.ar_lvl     =  self._get_data('ar_lvl')
-        self.mr         =  self._get_data('mr')
-        self.mr_lvl     =  self._get_data('mr_lvl')
-        self.hp         =  self._get_data('hp')
-        self.hp_lvl     =  self._get_data('hp_lvl')
-        self.mp         =  self._get_data('mp')
-        self.mp_lvl     =  self._get_data('mp_lvl')
-        self.hp5        =  self._get_data('hp5')
-        self.hp5_lvl    =  self._get_data('hp5_lvl')
-        self.mp5        =  self._get_data('mp5')
-        self.mp5_lvl    =  self._get_data('mp5_lvl')
 
         self.base_ats    =   self.ats
         # self.base_ad     =   self.ad  + self.ad_lvl  * self.base_building_multiplier(self.lvl)
