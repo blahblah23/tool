@@ -165,8 +165,7 @@ class Champion:
     
     
     # bbm line below here
-    def base_building_multiplier(self, lvl):
-        return (lvl - 1) * (0.685 + 0.0175 * lvl) 
+
     
     def doDmg(self):
         #calc outgoing dmg
