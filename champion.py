@@ -1,3 +1,15 @@
+def champ_decorator(cls):
+    bases = ['base_ad', 'base_ar', 'base_mr', 
+                'base_hp', 'base_mp', 'base_hp5', 'base_mp5']
+    totals = ['total_ats', 'total_ad', 'total_ar', 'total_mr', 
+                'total_hp', 'total_mp', 'total_hp5', 'total_mp5']
+    for name in bases:
+        stat = name.split('_')[1]
+        setattr(cls, name, BaseDescriptor(stat))
+    for name in totals:
+        stat = name.split('_')[1]
+        setattr(cls, name, TotalDescriptor(stat))
+    return cls
 
 
 
@@ -6,7 +18,7 @@
 
 
 
-#commited from vscode on testbranch
+
 
 
 
@@ -22,16 +34,10 @@ class BaseDescriptor:
     def __init__(self, attr_name):
         self.attr_name = attr_name
 
-
-        
-        pass
-    
     def __get__(self, obj, type=None):
         
         # return obj.ad                           + obj.ad_lvl                              * obj.base_building_multiplier(obj.lvl)
-        return getattr(obj, self.attr_name)   +   getattr(obj, self.attr_name + '_lvl')   *   obj.base_building_multiplier(obj.lvl)
-
-
+        return getattr(obj, self.attr_name) + getattr(obj, self.attr_name + '_lvl') * obj.base_building_multiplier(obj.lvl)
 class TotalDescriptor:
     def __init__(self, attr_name):
         self.attr_name = attr_name
@@ -41,14 +47,41 @@ class TotalDescriptor:
         
         # return self.base_ad                             + sum(    [    bonus[1] for bonus in  self.bonus_ad                            ]    )
         return getattr(obj, 'base_' + self.attr_name)   + sum(    [    bonus[1] for bonus in  getattr(obj, 'bonus_' + self.attr_name)  ]    )
+class CurrentHpDescriptor:
+    # def __init__(self):
+    #     pass
+    
+    def __get__(self, obj, type=None):
+        return obj._current_hp
+    def __set__(self, obj, value):
+        if value <= 0:
+            # stop_simulation()
+            # report_final_state()
+            print(obj, 'died LUL')
+        obj._current_hp = value
 
 
 class Champion:
-    
-    
-    base_ad     =   BaseDescriptor('ad')
-    total_ad    =   TotalDescriptor('ad')
 
+    if True: # class attrs
+        base_ad     =   BaseDescriptor('ad')
+        base_ar     =   BaseDescriptor('ar')
+        base_mr     =   BaseDescriptor('mr')
+        base_hp     =   BaseDescriptor('hp')
+        base_mp     =   BaseDescriptor('mp')
+        base_hp5    =   BaseDescriptor('hp5')
+        base_mp5    =   BaseDescriptor('mp5')
+
+        total_ats   =   TotalDescriptor('ats')
+        total_ad    =   TotalDescriptor('ad')
+        total_ar    =   TotalDescriptor('ar')
+        total_mr    =   TotalDescriptor('mr')
+        total_hp    =   TotalDescriptor('hp')
+        total_mp    =   TotalDescriptor('mp')
+        total_hp5   =   TotalDescriptor('hp5')
+        total_mp5   =   TotalDescriptor('mp5')
+
+        current_hp  =   CurrentHpDescriptor()
 
     def __init__(self, lvl, scheme, tgt=None, **kwargs):
         super().__init__(**kwargs)
@@ -69,43 +102,44 @@ class Champion:
         self.W = self._load_skill('w')
         self.E = self._load_skill('e')
         self.R = self._load_skill('r')
-
     def _get_data(self, stat):
         return data.data[self.__class__.__name__][stat]
     def _init_stats(self):
-        self.cdr         =   0
-        self.ap          =   0
-        self.crit        =   0
-        self.critdmg     =   2
-        self.lifesteal   =   0
-        self.vamp        =   0
-        self.arP         =   0
-        self.mP          =   0
-        self.hspower     =   0
-        self.tenac       =   0
 
-        # **data.data[self.CHAMP.__class__.__name__]
+        self.cdr        =  0
+        self.ap         =  0
+        self.arP        =  0
+        self.mP         =  0
+        self.crit       =  0
+        self.critdmg    =  2
+        self.lifesteal  =  0
+        self.vamp       =  0
+        self.hspower    =  0
+        self.tenac      =  0
 
+        self.autoclass  =  self._get_data( 'autoclass')
+        self.ms         =  self._get_data( 'ms'       )
+        self.range      =  self._get_data( 'range'    )
+        self.ats        =  self._get_data( 'ats'      )
+        self.ats_lvl    =  self._get_data( 'ats_lvl'  )
+        self.ad         =  self._get_data( 'ad'       )
+        self.ad_lvl     =  self._get_data( 'ad_lvl'   )
+        self.ar         =  self._get_data( 'ar'       )
+        self.ar_lvl     =  self._get_data( 'ar_lvl'   )
+        self.mr         =  self._get_data( 'mr'       )
+        self.mr_lvl     =  self._get_data( 'mr_lvl'   )
+        self.hp         =  self._get_data( 'hp'       )
+        self.hp_lvl     =  self._get_data( 'hp_lvl'   )
+        self.mp         =  self._get_data( 'mp'       )
+        self.mp_lvl     =  self._get_data( 'mp_lvl'   )
+        self.hp5        =  self._get_data( 'hp5'      )
+        self.hp5_lvl    =  self._get_data( 'hp5_lvl'  )
+        self.mp5        =  self._get_data( 'mp5'      )
+        self.mp5_lvl    =  self._get_data( 'mp5_lvl'  )
 
-        attr_names = ['autoclass', 'ms', 'range', 'ats', 'ats_lvl', 'ad', 'ad_lvl', 'ar', 'ar_lvl', 
-                        'mr', 'mr_lvl', 'hp', 'hp_lvl', 'mp', 'mp_lvl', 'hp5', 'hp5_lvl', 'mp5', 'mp5_lvl']
-
-        for name in attr_names:
-            setattr(self, name, self._get_data(name))
-
-
-        self.base_ats    =   self.ats
-        # self.base_ad     =   self.ad  + self.ad_lvl  * self.base_building_multiplier(self.lvl)
-        # self.base_ad     =   BaseDescriptor('ad')
-        self.base_ar     =   self.ar  + self.ar_lvl  * self.base_building_multiplier(self.lvl)
-        self.base_mr     =   self.mr  + self.mr_lvl  * self.base_building_multiplier(self.lvl)
-        self.base_hp     =   self.hp  + self.hp_lvl  * self.base_building_multiplier(self.lvl)
-        self.base_mp     =   self.mp  + self.mp_lvl  * self.base_building_multiplier(self.lvl)
-        self.base_hp5    =   self.hp5 + self.hp5_lvl * self.base_building_multiplier(self.lvl)
-        self.base_mp5    =   self.mp5 + self.mp5_lvl * self.base_building_multiplier(self.lvl)
+        self.base_ats   =  self.ats
 
         self.bonus_ats   =   [['lvlbonus', self.ats_lvl * self.base_building_multiplier(self.lvl)]]
-        # self.bonus_ad    =   [[0, 10]]
         self.bonus_ad    =   []
         self.bonus_ar    =   []
         self.bonus_mr    =   []
@@ -114,21 +148,8 @@ class Champion:
         self.bonus_hp5   =   []
         self.bonus_mp5   =   []
 
-        self.total_ats   =   self.base_ats + sum(    [    bonus[1] for bonus in self.bonus_ats    ]    )
-        # self.total_ad    =   self.base_ad  + sum(    [    bonus[1] for bonus in self.bonus_ad     ]    )
-        # self.total_ad    =   TotalDescriptor('ad')
-        self.total_ar    =   self.base_ar  + sum(    [    bonus[1] for bonus in self.bonus_ar     ]    )
-        self.total_mr    =   self.base_mr  + sum(    [    bonus[1] for bonus in self.bonus_mr     ]    )
-        self.total_hp    =   self.base_hp  + sum(    [    bonus[1] for bonus in self.bonus_hp     ]    )
-        self.total_mp    =   self.base_mp  + sum(    [    bonus[1] for bonus in self.bonus_mp     ]    )
-        self.total_hp5   =   self.base_hp5 + sum(    [    bonus[1] for bonus in self.bonus_hp5    ]    )
-        self.total_mp5   =   self.base_mp5 + sum(    [    bonus[1] for bonus in self.bonus_mp5    ]    )
-
         self.current_hp  =   self.total_hp
         self.current_mp  =   self.total_mp
-
-
-        pass
     def _load_skill(self, skill):
         '''str-skill := p,q,w,e,r'''
         mod = import_module('trial.{}.{}'.format(self.__class__.__name__.lower(), skill))
@@ -136,14 +157,6 @@ class Champion:
     def base_building_multiplier(self, lvl):
         return (lvl - 1) * (0.685 + 0.0175 * lvl) 
     
-
-    @property
-    def base_ad(self):
-        return self.ad  + self.ad_lvl  * self.base_building_multiplier(self.lvl)
-
-
-
-
     def doDmg(self):
         #calc outgoing dmg
         self.tgt.takeDmg(outgoing_dmg)
@@ -154,18 +167,6 @@ class Champion:
         # other code
         # self.abilityUsed()
         self.ABILITY_USED.notify()
-    def die(self):
-        # stop_simulation()
-        # report_final_state()
-        print(self, 'died')
-
-
-
-
-
-
-
-
 
     def __str__(self):
         return '{}{}'.format(self.__class__.__name__, hex(id(self)))

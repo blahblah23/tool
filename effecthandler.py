@@ -24,9 +24,7 @@ class EffectHandler(KnowsCHAMP):
             self.CHAMP.current_hp -= dmg['pdmg'].dmg
         if dmg['tdmg']:
             self.CHAMP.current_hp -= dmg['tdmg'].dmg
-        
-        if self.CHAMP.current_hp <= 0:
-            self.CHAMP.die()
+            
     def handle_effect(self, effect):
         # self.handle_dmg(effect)
         self.handle_dmg(effect.dmg)
