@@ -154,6 +154,17 @@ class Champion:
         '''str-skill := p,q,w,e,r'''
         mod = import_module('trial.{}.{}'.format(self.__class__.__name__.lower(), skill))
         return getattr(mod, skill.upper())(CHAMP=self)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # bbm line below here
     def base_building_multiplier(self, lvl):
         return (lvl - 1) * (0.685 + 0.0175 * lvl) 
     
