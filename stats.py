@@ -178,7 +178,10 @@ class Stats(KnowsCHAMP):
 
             pass
 
-    def base_building_multiplier(self, lvl):
-        return (lvl - 1) * (0.685 + 0.0175 * lvl)  
+
+    #   put this in champion
+    # def base_building_multiplier(self, lvl):
+    #     return (lvl - 1) * (0.685 + 0.0175 * lvl)  
+    
 
 

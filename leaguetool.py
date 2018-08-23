@@ -8,6 +8,8 @@
 from globals_ import *
 # from globs import pprint
 import trial.kassadin.kassadin
+import helpers
+import bonustat
 
 Kassadin = trial.kassadin.kassadin.Kassadin
 
@@ -25,25 +27,23 @@ print(kassadin2.E.STACKER.counter)
 kassadin.q()
 kassadin2.q()
 kassadin2.q()
-# kassadin2.E.cast()
 
 print(kassadin.E.STACKER.counter)
 print(kassadin2.E.STACKER.counter)
 
-# print(kassadin.P)
 
-# pprint(kassadin.STATS)
-# for t in kassadin.STATS.stats.items():
-#     print(t)
-# pprint(kassadin.E.get_mdmg().__dict__)
 
-pprint(kassadin2.STATS.stats['current_hp'])
+pprint(kassadin2.current_hp)
+
+
+kassadin.bonus_ad.append(bonustat.Bonus('testbonus', 10))
+print('kassadin.ad:', 53.544  + 3.3  * helpers.bbm(11))
+print('kassadin.total_ad:', kassadin.total_ad)
+
+
 for __ in range(12):
     kassadin.E.cast()
 
-# pprint(kassadin2.EFFECT_HANDLER.CHAMP)
-# pprint(kassadin2.EFFECT_HANDLER)
-pprint(kassadin2.STATS.stats['current_hp'])
 
-
+pprint(kassadin2.current_hp)
 
