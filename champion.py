@@ -24,10 +24,11 @@ def champ_decorator(cls):
 
 from globals_ import *
 import observer
-import stats
+# import stats
 import effecthandler
 import data
-
+import helpers
+import bonustat
 
 class BaseDescriptor:
     '''will only change when champ.lvl changes'''
@@ -36,8 +37,8 @@ class BaseDescriptor:
 
     def __get__(self, obj, type=None):
         
-        # return obj.ad                           + obj.ad_lvl                              * obj.base_building_multiplier(obj.lvl)
-        return getattr(obj, self.attr_name) + getattr(obj, self.attr_name + '_lvl') * obj.base_building_multiplier(obj.lvl)
+        # return obj.ad                           + obj.ad_lvl                              * obj.bbm(obj.lvl)
+        return getattr(obj, self.attr_name) + getattr(obj, self.attr_name + '_lvl') * helpers.bbm(obj.lvl)
 class TotalDescriptor:
     def __init__(self, attr_name):
         self.attr_name = attr_name
@@ -46,7 +47,7 @@ class TotalDescriptor:
     def __get__(self, obj, type=None):
         
         # return self.base_ad                             + sum(    [    bonus[1] for bonus in  self.bonus_ad                            ]    )
-        return getattr(obj, 'base_' + self.attr_name)   + sum(    [    bonus[1] for bonus in  getattr(obj, 'bonus_' + self.attr_name)  ]    )
+        return getattr(obj, 'base_' + self.attr_name)   + sum(    [    bonus.value for bonus in  getattr(obj, 'bonus_' + self.attr_name)  ]    )
 class CurrentHpDescriptor:
     # def __init__(self):
     #     pass
@@ -106,16 +107,16 @@ class Champion:
         return data.data[self.__class__.__name__][stat]
     def _init_stats(self):
 
-        self.cdr        =  0
-        self.ap         =  0
-        self.arP        =  0
-        self.mP         =  0
-        self.crit       =  0
-        self.critdmg    =  2
-        self.lifesteal  =  0
-        self.vamp       =  0
-        self.hspower    =  0
-        self.tenac      =  0
+        self.cdr        =  0    # probly property/descriptor
+        self.ap         =  0    # probly property/descriptor
+        self.arP        =  0    # probly property/descriptor
+        self.mP         =  0    # probly property/descriptor
+        self.crit       =  0    # probly property/descriptor
+        self.critdmg    =  2    # probly property/descriptor
+        self.lifesteal  =  0    # probly property/descriptor
+        self.vamp       =  0    # probly property/descriptor
+        self.hspower    =  0    # probly property/descriptor
+        self.tenac      =  0    # probly property/descriptor
 
         self.autoclass  =  self._get_data( 'autoclass')
         self.ms         =  self._get_data( 'ms'       )
@@ -139,7 +140,7 @@ class Champion:
 
         self.base_ats   =  self.ats
 
-        self.bonus_ats   =   [['lvlbonus', self.ats_lvl * self.base_building_multiplier(self.lvl)]]
+        self.bonus_ats   =   [[bonustat.Bonus('lvlbonus', self.ats_lvl * helpers.bbm(self.lvl))]]
         self.bonus_ad    =   []
         self.bonus_ar    =   []
         self.bonus_mr    =   []
@@ -154,18 +155,6 @@ class Champion:
         '''str-skill := p,q,w,e,r'''
         mod = import_module('trial.{}.{}'.format(self.__class__.__name__.lower(), skill))
         return getattr(mod, skill.upper())(CHAMP=self)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    # bbm line below here
-
     
     def doDmg(self):
         #calc outgoing dmg
@@ -189,6 +178,15 @@ if __name__ == '__main__':
     # pprint(globals())
     # print(allchamps.zyra.p)
     pass
+
+
+
+
+
+
+
+
+
 
 
 

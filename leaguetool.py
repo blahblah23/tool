@@ -8,6 +8,8 @@
 from globals_ import *
 # from globs import pprint
 import trial.kassadin.kassadin
+import helpers
+import bonustat
 
 Kassadin = trial.kassadin.kassadin.Kassadin
 
@@ -34,8 +36,8 @@ print(kassadin2.E.STACKER.counter)
 pprint(kassadin2.current_hp)
 
 
-kassadin.bonus_ad    =   [[0, 10]]
-print('kassadin.ad:', 53.544  + 3.3  * kassadin.base_building_multiplier(11))
+kassadin.bonus_ad.append(bonustat.Bonus('testbonus', 10))
+print('kassadin.ad:', 53.544  + 3.3  * helpers.bbm(11))
 print('kassadin.total_ad:', kassadin.total_ad)
 
 
