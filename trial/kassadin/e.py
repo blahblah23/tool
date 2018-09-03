@@ -44,10 +44,10 @@ class E(ABS_E):
     def get_mdmg(self):
         # doesnt need to return more than one instance ever?
         return MDmg(
-            CHAMP = self.CHAMP, 
-            OWNER = self, 
-            dmg   = self.get_inherent_dmg(), 
-            tags  = ['ability', 'aoe']
+            CHAMP  = self.CHAMP, 
+            OWNER  = self, 
+            amount = self.get_inherent_dmg(), 
+            tags   = ['ability', 'aoe']
         )
     def get_slow(self):
         return Slow(
@@ -67,6 +67,9 @@ class E(ABS_E):
         self.STACKER.reset()
     def setCastable(self, value):
         self.castable = value
+
+
+
 
 # passive: self get STACK on TODO nearby TODO abil use, max 6
 # at 6, E becomes castable

@@ -13,35 +13,63 @@ from observer import Observer
 
 
 
-class Builda_Stacker:
-    def __init__(self):
-        super().__init__()
 
 class Abstract_Stacker(Observer):
+
     def __init__(self, CHAMP, OWNER):
         super().__init__()
         self.CHAMP   = CHAMP
         self.OWNER   = OWNER
-        self.counter = 0
+        self._counter = 0
+    @property
+    def counter(self):
+        return self._counter
     def reset(self):
         self.counter = 0
     def add(self, toAdd):
         self.counter += toAdd
     def note(self):
         self.add(1)
+        # TODO if counter maxxed, unsubscribe????
+        # so that it doesnt keep getting notified once at max 
+        # doesnt seem necessary
 
 class CoX(Abstract_Stacker):
     def __init__(self, CHAMP, OWNER, MAX, ON_MAX):
         super().__init__(CHAMP, OWNER)
-        self.MAX   = MAX
+        self.MAX = MAX
         self.ON_MAX = ON_MAX
-    def add(self, toAdd):
-        # self.counter += toAdd
-        # TODO if counter maxxed, unsubscribe????
-        self.counter = min(self.MAX, self.counter + toAdd)
-        if self.counter >= self.MAX:
+    @Abstract_Stacker.counter.setter
+    def counter(self, count):
+        self._counter = min(self.MAX, count)
+        if self._counter >= self.MAX:
             self.ON_MAX[0](*self.ON_MAX[1])
 
+
+
+
+if __name__ == '__main__':
+    a = Abstract_Stacker(None, None)
+    b = CoX(None, None, 6, None)
+    # print(a.__class__.__dict__)
+    # print(dir(Abstract_Stacker.counter))
+    print(Abstract_Stacker.counter.fset)
+    print(CoX.counter.fset)
+
+
+
+
+
+
+
+
+
+
+
+
+class Builda_Stacker:
+    def __init__(self):
+        super().__init__()
 class Stacker(Observer):
     def __init__(self, CHAMP, OWNER, MAX, ON_MAX):
         super().__init__()
@@ -60,11 +88,6 @@ class Stacker(Observer):
         self.add(1)
         if self.counter >= self.MAX:
             self.callOnMax()
-
-
-
-
-
 
 
 

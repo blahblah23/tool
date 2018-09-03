@@ -17,18 +17,18 @@ from globals_ import *
 
 
 class ABS_Dmg(KnowsCHAMP, KnowsOWNER):
-    def __init__(self, dmg, tags=[], **kwargs):
+    def __init__(self, amount, tags=[], **kwargs):
         super().__init__(**kwargs)
-
         self.tags = tags
-        self.dmg  = dmg
-    def __getattr__(self, attr):
-        return getattr(self.CHAMP, attr)
+        self.amount  = amount
 
 class MDmg(ABS_Dmg):
-    '''positional args need kywds := dmg, tags, CHAMP, OWNER'''
+    '''positional args need kywds := amount, tags, CHAMP, OWNER'''
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        '''http://leagueoflegends.wikia.com/wiki/Armor_penetration'''
+        # self.pen_flat = self.CHAMP.mP
+        # self.pen_percent = self.CHAMP.mP
 
 class PDmg(ABS_Dmg):
     pass
@@ -36,12 +36,6 @@ class TDmg(ABS_Dmg):
     pass
 
 
-MDmg(
-    dmg   = 100, 
-    tags  = ['basic atk dmg'], 
-    CHAMP = None,
-    OWNER = None
-)
 
 
 class Heal(KnowsCHAMP, KnowsOWNER):
@@ -55,7 +49,20 @@ class Heal(KnowsCHAMP, KnowsOWNER):
 
 
 
+if __name__ == '__main__':
 
+    MDmg(
+        amount = 100, 
+        tags   = ['basic atk dmg'], 
+        CHAMP  = None,
+        OWNER  = None
+    )
+
+
+
+
+
+    pass
 
 
 

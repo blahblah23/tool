@@ -37,17 +37,19 @@ class BaseDescriptor:
 
     def __get__(self, obj, type=None):
         
-        # return obj.ad                           + obj.ad_lvl                              * obj.bbm(obj.lvl)
-        return getattr(obj, self.attr_name) + getattr(obj, self.attr_name + '_lvl') * helpers.bbm(obj.lvl)
+        # return obj.ad + obj.ad_lvl * helpers.bbm(obj.lvl)
+        return (  getattr(obj, self.attr_name)
+                + getattr(obj, self.attr_name + '_lvl')
+                * helpers.bbm(obj.lvl)  )
 class TotalDescriptor:
     def __init__(self, attr_name):
         self.attr_name = attr_name
-        pass
     
     def __get__(self, obj, type=None):
         
-        # return self.base_ad                             + sum(    [    bonus[1] for bonus in  self.bonus_ad                            ]    )
-        return getattr(obj, 'base_' + self.attr_name)   + sum(    [    bonus.value for bonus in  getattr(obj, 'bonus_' + self.attr_name)  ]    )
+        return (getattr(obj, 'base_' + self.attr_name) 
+                + sum( [bonus.value for bonus 
+                in getattr(obj, 'bonus_' + self.attr_name)]))
 class CurrentHpDescriptor:
     # def __init__(self):
     #     pass
@@ -109,8 +111,10 @@ class Champion:
 
         self.cdr        =  0    # probly property/descriptor
         self.ap         =  0    # probly property/descriptor
-        self.arP        =  0    # probly property/descriptor
-        self.mP         =  0    # probly property/descriptor
+        self.arP_flat   =  0    # probly property/descriptor
+        self.arP_perc   =  0    # probly property/descriptor
+        self.mP_flat    =  0    # probly property/descriptor
+        self.mP_perc    =  0    # probly property/descriptor
         self.crit       =  0    # probly property/descriptor
         self.critdmg    =  2    # probly property/descriptor
         self.lifesteal  =  0    # probly property/descriptor
@@ -137,7 +141,6 @@ class Champion:
         self.hp5_lvl    =  self._get_data( 'hp5_lvl'  )
         self.mp5        =  self._get_data( 'mp5'      )
         self.mp5_lvl    =  self._get_data( 'mp5_lvl'  )
-
         self.base_ats   =  self.ats
 
         self.bonus_ats   =   [[bonustat.Bonus('lvlbonus', self.ats_lvl * helpers.bbm(self.lvl))]]

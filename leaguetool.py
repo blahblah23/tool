@@ -28,6 +28,13 @@ kassadin.q()
 kassadin2.q()
 kassadin2.q()
 
+kassadin2.q()
+kassadin2.q()
+kassadin2.q()
+
+kassadin2.q()
+
+
 print(kassadin.E.STACKER.counter)
 print(kassadin2.E.STACKER.counter)
 
