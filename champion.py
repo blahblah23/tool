@@ -51,9 +51,6 @@ class TotalDescriptor:
                 + sum( [bonus.value for bonus 
                 in getattr(obj, 'bonus_' + self.attr_name)]))
 class CurrentHpDescriptor:
-    # def __init__(self):
-    #     pass
-    
     def __get__(self, obj, type=None):
         return obj._current_hp
     def __set__(self, obj, value):
@@ -62,8 +59,14 @@ class CurrentHpDescriptor:
             # report_final_state()
             print(obj, 'died LUL')
         obj._current_hp = value
-
-
+class CurrentMpDescriptor:
+    def __get__(self, obj, type=None):
+        return obj._current_mp
+    def __set__(self, obj, value):
+        obj._current_mp = value
+class ArPenFlatDescriptor:
+    def __get__(self, obj, type=None):
+        return obj.lethality * (0.6 + 0.4 * obj.lvl / 18) 
 class Champion:
 
     if True: # class attrs
@@ -85,6 +88,8 @@ class Champion:
         total_mp5   =   TotalDescriptor('mp5')
 
         current_hp  =   CurrentHpDescriptor()
+        # current_mp  =   CurrentMpDescriptor()
+        ar_pen_flat =   ArPenFlatDescriptor()
 
     def __init__(self, lvl, scheme, tgt=None, **kwargs):
         super().__init__(**kwargs)
@@ -109,18 +114,26 @@ class Champion:
         return data.data[self.__class__.__name__][stat]
     def _init_stats(self):
 
-        self.cdr        =  0    # probly property/descriptor
-        self.ap         =  0    # probly property/descriptor
-        self.arP_flat   =  0    # probly property/descriptor
-        self.arP_perc   =  0    # probly property/descriptor
-        self.mP_flat    =  0    # probly property/descriptor
-        self.mP_perc    =  0    # probly property/descriptor
-        self.crit       =  0    # probly property/descriptor
-        self.critdmg    =  2    # probly property/descriptor
-        self.lifesteal  =  0    # probly property/descriptor
-        self.vamp       =  0    # probly property/descriptor
-        self.hspower    =  0    # probly property/descriptor
-        self.tenac      =  0    # probly property/descriptor
+        self.cdr         =  0    # probly property/descriptor
+        self.ap          =  0    # probly property/descriptor
+
+        self.ar_reduc_flat       = 0       
+        self.ar_reduc_percent    = 0           
+        self.ar_pen_percent      = 0       
+        # self.ar_pen_flat         = 0       
+        self.lethality           = 0   
+
+        self.mr_reduc_flat       = 0       
+        self.mr_reduc_percent    = 0           
+        self.mr_pen_percent      = 0       
+        self.mr_pen_flat         = 0       
+
+        self.crit        =  0    # probly property/descriptor
+        self.critdmg     =  2    # probly property/descriptor
+        self.lifesteal   =  0    # probly property/descriptor
+        self.vamp        =  0    # probly property/descriptor
+        self.hspower     =  0    # probly property/descriptor
+        self.tenac       =  0    # probly property/descriptor
 
         self.autoclass  =  self._get_data( 'autoclass')
         self.ms         =  self._get_data( 'ms'       )

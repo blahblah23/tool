@@ -2,7 +2,7 @@
 
 
 
-
+from pprint import pprint
 import os
 from importlib import import_module
 # import components.general.observer
@@ -11,8 +11,6 @@ from importlib import import_module
 from champ_names import champ_names_for_packages
 
 
-
-from pprint import pprint
 class SuperInit:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

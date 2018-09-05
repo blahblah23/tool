@@ -20,6 +20,8 @@ from stack import Stacker, CoX
 from dmgheal import MDmg
 from effect import Effect
 from slow import Slow
+import time
+import cooldown
 
 
 
@@ -29,10 +31,16 @@ class E(ABS_E):
         super().__init__(**kwargs)
         self.RAD      = 600
         self.ANGLE    = 80
-        self.cost     = 60 + 5 * (self.lvl - 1) #### TODO mana + 6 STACK 
-        self.CD       = 5 
+        self.cost     = 60 + 5 * (self.lvl - 1)
+        #### TODO costs mana   and   6 STACKs 
+        self.CD       = cooldown.Cooldown(CHAMP  = self.CHAMP, 
+                                          OWNER  = self, 
+                                          length = 500) 
         self.castable = False
-        self.STACKER  = CoX(self.CHAMP, self, 6, [self.setCastable, [True]])
+        self.STACKER  = CoX(self.CHAMP, 
+                            self, 
+                            6, 
+                            [self.setCastable, [True]])
         
         
         ###### subscribe STACKER to all ABILITY_USE
@@ -59,10 +67,13 @@ class E(ABS_E):
         return Effect(
             CHAMP = self.CHAMP,
             OWNER = self,
-            dmg   = {'mdmg': self.get_mdmg(), 'pdmg': None, 'tdmg': None}, 
+            mdmg  = self.get_mdmg(),
             slow  = self.get_slow(),
         )
-    def cast(self): 
+    def cast(self):
+        self.CD.trigger()
+        # cd     time.Timer('kassadin?.E.cd', 500, )
+        self.CHAMP.current_mp -= self.cost
         self.CHAMP.tgt.EFFECT_HANDLER.handle_effect(self.get_effect())
         self.STACKER.reset()
     def setCastable(self, value):

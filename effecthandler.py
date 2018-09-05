@@ -16,41 +16,69 @@ import dmgheal
 class EffectHandler(KnowsCHAMP):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    def handle_dmg(self, dmg):
-        '''http://leagueoflegends.wikia.com/wiki/Armor_penetration'''
-        if dmg['mdmg']:
-            mdmg = dmg['mdmg']
-
-            defence = self.CHAMP.total_mr
-            mP_flat = 000000
-            self.CHAMP.current_hp -= mdmg.amount
-
-        if dmg['pdmg']:
-            pdmg = dmg['pdmg']
-            
-            defence = self.CHAMP.total_ar
-            self.CHAMP.current_hp -= pdmg.amount
-
-        if dmg['tdmg']:
-            tdmg = dmg['tdmg']
-            self.CHAMP.current_hp -= tdmg.amount
-            
+    
     def handle_effect(self, effect):
-        # self.handle_dmg(effect)
-        self.handle_dmg(effect.dmg)
 
 
-    def dmg     (self, typ, amount):
-        ''' typ = 'phys' or 'magic'  
-            return dmg dict'''
-        return {
-            'type':   typ,
-            'amount': amount,
-            'pen':    self.stat4[TYPESTAT[typ]['pen']],
-            'pen%':   self.stat4[TYPESTAT[typ]['pen%']]
-        }
-    def defend_dmg(self, dmg):
+
+        self.handle_dmg(effect)    
+    def handle_dmg(self, effect):
+        '''http://leagueoflegends.wikia.com/wiki/Armor_penetration'''
+        # if effect.mdmg:    self.handle_mdmg(effect.mdmg)
+        # if effect.pdmg:    self.handle_pdmg(effect.pdmg)
+        # if effect.tdmg:    self.handle_tdmg(effect.tdmg)
+
+        if effect.mdmg:    self.handle_xdmg(effect.mdmg)
+        if effect.pdmg:    self.handle_xdmg(effect.pdmg)
+        if effect.tdmg:    self.handle_xdmg(effect.tdmg)
+    
+    def handle_mdmg(self, mdmg):
+        mr             = self.CHAMP.total_mr
+        mr_pen_flat    = mdmg.CHAMP.mr_pen_flat
+        mr_pen_percent = mdmg.CHAMP.mr_pen_percent
+        
+        if mr >= 0:
+            post_dmg = mdmg.amount * 100 / (100 + max(0, 
+                mr - mr_pen_percent * mr - mr_pen_flat))
+        else:
+            post_dmg = mdmg.amount * (2 - 100/(100 - mr))
+
+        self.CHAMP.current_hp -= post_dmg
+    def handle_xdmg(self, xdmg):
+        if isinstance(xdmg, dmgheal.TDmg):
+            self.CHAMP.current_hp -= xdmg.amount
+            return
+        elif isinstance(xdmg, dmgheal.PDmg):
+            def_            = self.CHAMP.total_ar
+            def_pen_flat    = xdmg.CHAMP.ar_pen_flat
+            def_pen_percent = xdmg.CHAMP.ar_pen_percent
+        else:
+        # elif isinstance(xdmg, dmgheal.MDmg):
+            def_            = self.CHAMP.total_mr
+            def_pen_flat    = xdmg.CHAMP.mr_pen_flat
+            def_pen_percent = xdmg.CHAMP.mr_pen_percent
+
+
+        if def_ >= 0:
+            post_dmg = xdmg.amount * 100 / (100 + max(0, 
+                def_ - def_pen_percent * def_ - def_pen_flat))
+        else:
+            post_dmg = xdmg.amount * (2 - 100/(100 - def_))
+
+        self.CHAMP.current_hp -= post_dmg
+
+
+
+
+
+
+
+
+
+
+
+
+    def defend_dmg(self, xdmg):
 
         if self.defence(dmg) >= 0: 
             post_dmg = 100/(100 + self.pen_def(dmg)) * dmg['amount']
