@@ -32,7 +32,8 @@ class E(ABS_E):
         self.RAD      = 600
         self.ANGLE    = 80
         self.cost     = 60 + 5 * (self.lvl - 1)
-        #### TODO costs mana   and   6 STACKs 
+        # TODO costs mana   and   6 STACKs 
+        # make cost a property?
         self.CD       = cooldown.Cooldown(CHAMP  = self.CHAMP, 
                                           OWNER  = self, 
                                           length = 500) 

@@ -24,7 +24,7 @@ def champ_decorator(cls):
 
 from globals_ import *
 import observer
-# import stats
+import stats
 import effecthandler
 import data
 import helpers
@@ -67,29 +67,50 @@ class CurrentMpDescriptor:
 class ArPenFlatDescriptor:
     def __get__(self, obj, type=None):
         return obj.lethality * (0.6 + 0.4 * obj.lvl / 18) 
+class ListBonusDescriptor:
+    def __init__(self, attr_name):
+        self.attr_name = attr_name
+    def __get__(self, obj, type=None):
+        attr = getattr(obj, '_' + self.attr_name)
+        return sum([bonus.value for bonus in attr])
+    def __set__(self, obj, value):
+        setattr(obj, '_' + self.attr_name, value)
+
+
+
+
+
+
+
+
+
+
 class Champion:
 
     if True: # class attrs
-        base_ad     =   BaseDescriptor('ad')
-        base_ar     =   BaseDescriptor('ar')
-        base_mr     =   BaseDescriptor('mr')
-        base_hp     =   BaseDescriptor('hp')
-        base_mp     =   BaseDescriptor('mp')
-        base_hp5    =   BaseDescriptor('hp5')
-        base_mp5    =   BaseDescriptor('mp5')
+        # base_ad     =   BaseDescriptor('ad')
+        # base_ar     =   BaseDescriptor('ar')
+        # base_mr     =   BaseDescriptor('mr')
+        # base_hp     =   BaseDescriptor('hp')
+        # base_mp     =   BaseDescriptor('mp')
+        # base_hp5    =   BaseDescriptor('hp5')
+        # base_mp5    =   BaseDescriptor('mp5')
 
-        total_ats   =   TotalDescriptor('ats')
-        total_ad    =   TotalDescriptor('ad')
-        total_ar    =   TotalDescriptor('ar')
-        total_mr    =   TotalDescriptor('mr')
-        total_hp    =   TotalDescriptor('hp')
-        total_mp    =   TotalDescriptor('mp')
-        total_hp5   =   TotalDescriptor('hp5')
-        total_mp5   =   TotalDescriptor('mp5')
+        # total_ats   =   TotalDescriptor('ats')
+        # total_ad    =   TotalDescriptor('ad')
+        # total_ar    =   TotalDescriptor('ar')
+        # total_mr    =   TotalDescriptor('mr')
+        # total_hp    =   TotalDescriptor('hp')
+        # total_mp    =   TotalDescriptor('mp')
+        # total_hp5   =   TotalDescriptor('hp5')
+        # total_mp5   =   TotalDescriptor('mp5')
 
-        current_hp  =   CurrentHpDescriptor()
-        # current_mp  =   CurrentMpDescriptor()
-        ar_pen_flat =   ArPenFlatDescriptor()
+        # current_hp  =   CurrentHpDescriptor()
+        # # current_mp  =   CurrentMpDescriptor()
+        # ar_pen_flat =   ArPenFlatDescriptor()
+
+
+        pass
 
     def __init__(self, lvl, scheme, tgt=None, **kwargs):
         super().__init__(**kwargs)
@@ -100,8 +121,8 @@ class Champion:
         self.tgt = tgt
         self.scheme = scheme
 
-        self._init_stats()
-
+        # self._init_stats()
+        self.STATS          =         stats.Stats(CHAMP=self)
         self.EFFECT_HANDLER = effecthandler.EffectHandler(CHAMP=self)
         self.ABILITY_USED   =      observer.AbilityUsed() ### this design seems bad
 
@@ -110,6 +131,31 @@ class Champion:
         self.W = self._load_skill('w')
         self.E = self._load_skill('e')
         self.R = self._load_skill('r')
+    def _load_skill(self, skill):
+        '''str-skill := p,q,w,e,r'''
+        mod = import_module('trial.{}.{}'.format(self.__class__.__name__.lower(), skill))
+        return getattr(mod, skill.upper())(CHAMP=self)
+
+    def doDmg(self):
+        #calc outgoing dmg
+        self.tgt.takeDmg(outgoing_dmg)
+    def take_dmg(self, incoming_dmg):
+        self.hitpoints -= incoming_dmg
+    def q(self):
+        # other code
+        # other code
+        # self.abilityUsed()
+        self.ABILITY_USED.notify()
+
+
+
+    def __str__(self):
+        return '{}{}'.format(self.__class__.__name__, hex(id(self)))
+    def __getattr__(self, attr):
+        return getattr(self.STATS, attr)
+
+
+
     def _get_data(self, stat):
         return data.data[self.__class__.__name__][stat]
     def _init_stats(self):
@@ -167,26 +213,6 @@ class Champion:
 
         self.current_hp  =   self.total_hp
         self.current_mp  =   self.total_mp
-    def _load_skill(self, skill):
-        '''str-skill := p,q,w,e,r'''
-        mod = import_module('trial.{}.{}'.format(self.__class__.__name__.lower(), skill))
-        return getattr(mod, skill.upper())(CHAMP=self)
-    
-    def doDmg(self):
-        #calc outgoing dmg
-        self.tgt.takeDmg(outgoing_dmg)
-    def take_dmg(self, incoming_dmg):
-        self.hitpoints -= incoming_dmg
-    def q(self):
-        # other code
-        # other code
-        # self.abilityUsed()
-        self.ABILITY_USED.notify()
-
-    def __str__(self):
-        return '{}{}'.format(self.__class__.__name__, hex(id(self)))
-
-
 
 
 if __name__ == '__main__':

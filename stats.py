@@ -6,182 +6,151 @@
 
 from globals_ import *
 import data
+import bonustat
+import helpers
+
+
+class BaseDescriptor:
+    '''will only change when champ.lvl changes'''
+    def __init__(self, attr_name):
+        self.attr_name = attr_name
+
+    def __get__(self, obj, type=None):
+        
+        # return obj.ad + obj.ad_lvl * helpers.bbm(obj.lvl)
+        return (  getattr(obj, self.attr_name)
+                + getattr(obj, self.attr_name + '_lvl')
+                * helpers.bbm(obj.lvl)  )
+class TotalDescriptor:
+    def __init__(self, attr_name):
+        self.attr_name = attr_name
+    
+    def __get__(self, obj, type=None):
+        
+        return (getattr(obj, 'base_' + self.attr_name) 
+                + sum( [bonus.value for bonus 
+                in getattr(obj, 'bonus_' + self.attr_name)]))
+class CurrentHpDescriptor:
+    def __get__(self, obj, type=None):
+        return obj._current_hp
+    def __set__(self, obj, value):
+        if value <= 0:
+            # stop_simulation()
+            # report_final_state()
+            print(obj, 'died LUL')
+        obj._current_hp = value
+class CurrentMpDescriptor:
+    def __get__(self, obj, type=None):
+        return obj._current_mp
+    def __set__(self, obj, value):
+        obj._current_mp = value
+class ArPenFlatDescriptor:
+    def __get__(self, obj, type=None):
+        return obj.lethality * (0.6 + 0.4 * obj.lvl / 18) 
+class ListBonusDescriptor:
+    def __init__(self, attr_name):
+        self.attr_name = attr_name
+    def __get__(self, obj, type=None):
+        attr = getattr(obj, '_' + self.attr_name)
+        return sum([bonus.value for bonus in attr])
+    def __set__(self, obj, value):
+        setattr(obj, '_' + self.attr_name, value)
+
+
 
 class Stats(KnowsCHAMP):
+
+    if True: # class attrs
+        base_ad     =   BaseDescriptor('ad')
+        base_ar     =   BaseDescriptor('ar')
+        base_mr     =   BaseDescriptor('mr')
+        base_hp     =   BaseDescriptor('hp')
+        base_mp     =   BaseDescriptor('mp')
+        base_hp5    =   BaseDescriptor('hp5')
+        base_mp5    =   BaseDescriptor('mp5')
+
+        total_ats   =   TotalDescriptor('ats')
+        total_ad    =   TotalDescriptor('ad')
+        total_ar    =   TotalDescriptor('ar')
+        total_mr    =   TotalDescriptor('mr')
+        total_hp    =   TotalDescriptor('hp')
+        total_mp    =   TotalDescriptor('mp')
+        total_hp5   =   TotalDescriptor('hp5')
+        total_mp5   =   TotalDescriptor('mp5')
+
+        current_hp  =   CurrentHpDescriptor()
+        # current_mp  =   CurrentMpDescriptor()
+        ar_pen_flat =   ArPenFlatDescriptor()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self.lvl = self.CHAMP.lvl
-        
-        if True:        # self.stats = {all values}
-            self.stats = {      # rawdata
-                'cdr':       0,
-                'ap':        0,
-                'crit':      0,
-                'critdmg':   2,
-                'lifesteal': 0,
-                'vamp':      0,
-                'arP':       0,
-                'mP':        0,
-                'hspower':   0,
-                'tenac':     0,
-                **data.data[self.CHAMP.__class__.__name__],
-            }
-            self.stats = {      # base bonus
-                **self.stats,
-                'base_ats': self.stats['ats'],
-                'base_ad':  self.stats['ad']  + self.stats['ad_lvl']  * self.base_building_multiplier(self.lvl),
-                'base_ar':  self.stats['ar']  + self.stats['ar_lvl']  * self.base_building_multiplier(self.lvl),
-                'base_mr':  self.stats['mr']  + self.stats['mr_lvl']  * self.base_building_multiplier(self.lvl),
-                'base_hp':  self.stats['hp']  + self.stats['hp_lvl']  * self.base_building_multiplier(self.lvl),
-                'base_mp':  self.stats['mp']  + self.stats['mp_lvl']  * self.base_building_multiplier(self.lvl),
-                'base_hp5': self.stats['hp5'] + self.stats['hp5_lvl'] * self.base_building_multiplier(self.lvl),
-                'base_mp5': self.stats['mp5'] + self.stats['mp5_lvl'] * self.base_building_multiplier(self.lvl),
 
-                'bonus_ats': [['lvlbonus', self.stats['ats_lvl'] * self.base_building_multiplier(self.lvl)]],
-                'bonus_ad':  [],
-                'bonus_ar':  [],
-                'bonus_mr':  [],
-                'bonus_hp':  [],
-                'bonus_mp':  [],
-                'bonus_hp5': [],
-                'bonus_mp5': [],
-            }
-            self.stats = {      # total
-                **self.stats,
-                'total_ats': self.stats['base_ats'] + sum(    [    bonus[1] for bonus in self.stats['bonus_ats']    ]    ),
-                'total_ad':  self.stats['base_ad' ] + sum(    [    bonus[1] for bonus in self.stats['bonus_ad' ]    ]    ),
-                'total_ar':  self.stats['base_ar' ] + sum(    [    bonus[1] for bonus in self.stats['bonus_ar' ]    ]    ),
-                'total_mr':  self.stats['base_mr' ] + sum(    [    bonus[1] for bonus in self.stats['bonus_mr' ]    ]    ),
-                'total_hp':  self.stats['base_hp' ] + sum(    [    bonus[1] for bonus in self.stats['bonus_hp' ]    ]    ),
-                'total_mp':  self.stats['base_mp' ] + sum(    [    bonus[1] for bonus in self.stats['bonus_mp' ]    ]    ),
-                'total_hp5': self.stats['base_hp5'] + sum(    [    bonus[1] for bonus in self.stats['bonus_hp5']    ]    ),
-                'total_mp5': self.stats['base_mp5'] + sum(    [    bonus[1] for bonus in self.stats['bonus_mp5']    ]    ),
-            }
-            self.stats = {      # current
-                **self.stats,
+        self._init_stats()
 
-                'current_hp': self.stats['total_hp'],
-                'current_mp': self.stats['total_mp'],
-            }
+    def _get_data(self, stat):
+        return data.data[self.CHAMP.__class__.__name__][stat]
+    def _init_stats(self):
 
-            
-            pass
+        self.cdr         =  0    # probly property/descriptor
+        self.ap          =  0    # probly property/descriptor
 
+        self.ar_reduc_flat       = 0       
+        self.ar_reduc_percent    = 0           
+        self.ar_pen_percent      = 0       
+        # self.ar_pen_flat         = 0       
+        self.lethality           = 0   
 
-        if True:        # self.stats = {nested dicts: DATA, base, bonus, total, current}
-            '''
-            self.stats = { 
-                'DATA': {
-                    'cdr':       0,
-                    'ap':        0,
-                    'crit':      0,
-                    'critdmg':   2,
-                    'lifesteal': 0,
-                    'vamp':      0,
-                    'arP':       0,
-                    'mP':        0,
-                    'hspower':   0,
-                    'tenac':     0,
-                    **data.data[self.CHAMP.__class__.__name__]
-                },
-                'base': {
-                    'ats': self.DATA['ats'],
-                    'ad':  self.DATA['ad']  + self.DATA['ad_lvl']  * self.base_building_multiplier(self.lvl),
-                    'ar':  self.DATA['ar']  + self.DATA['ar_lvl']  * self.base_building_multiplier(self.lvl),
-                    'mr':  self.DATA['mr']  + self.DATA['mr_lvl']  * self.base_building_multiplier(self.lvl),
-                    'hp':  self.DATA['hp']  + self.DATA['hp_lvl']  * self.base_building_multiplier(self.lvl),
-                    'mp':  self.DATA['mp']  + self.DATA['mp_lvl']  * self.base_building_multiplier(self.lvl),
-                    'hp5': self.DATA['hp5'] + self.DATA['hp5_lvl'] * self.base_building_multiplier(self.lvl),
-                    'mp5': self.DATA['mp5'] + self.DATA['mp5_lvl'] * self.base_building_multiplier(self.lvl),
-                },
-                'bonus': {
-                    'ats': [{'lvlbonus': self.DATA['ats_lvl'] * self.base_building_multiplier(self.lvl)}],
-                    'ad':  [],
-                    'ar':  [],
-                    'mr':  [],
-                    'hp':  [],
-                    'mp':  [],
-                    'hp5': [],
-                    'mp5': [],
-                },
-                'total': {
-                    'ats': [],
-                    'ad':  [],
-                    'ar':  [],
-                    'mr':  [],
-                    'hp':  [],
-                    'mp':  [],
-                    'hp5': [],
-                    'mp5': [],
-                },
-                'current': {
-                    'hp':  [],
-                    'mp':  [],
-                },
-            }
-            '''
+        self.mr_reduc_flat       = 0       
+        self.mr_reduc_percent    = 0           
+        self.mr_pen_percent      = 0       
+        self.mr_pen_flat         = 0       
+
+        self.crit        =  0    # probly property/descriptor
+        self.critdmg     =  2    # probly property/descriptor
+        self.lifesteal   =  0    # probly property/descriptor
+        self.vamp        =  0    # probly property/descriptor
+        self.hspower     =  0    # probly property/descriptor
+        self.tenac       =  0    # probly property/descriptor
+
+        self.autoclass  =  self._get_data( 'autoclass')
+        self.ms         =  self._get_data( 'ms'       )
+        self.range      =  self._get_data( 'range'    )
+        self.ats        =  self._get_data( 'ats'      )
+        self.ats_lvl    =  self._get_data( 'ats_lvl'  )
+        self.ad         =  self._get_data( 'ad'       )
+        self.ad_lvl     =  self._get_data( 'ad_lvl'   )
+        self.ar         =  self._get_data( 'ar'       )
+        self.ar_lvl     =  self._get_data( 'ar_lvl'   )
+        self.mr         =  self._get_data( 'mr'       )
+        self.mr_lvl     =  self._get_data( 'mr_lvl'   )
+        self.hp         =  self._get_data( 'hp'       )
+        self.hp_lvl     =  self._get_data( 'hp_lvl'   )
+        self.mp         =  self._get_data( 'mp'       )
+        self.mp_lvl     =  self._get_data( 'mp_lvl'   )
+        self.hp5        =  self._get_data( 'hp5'      )
+        self.hp5_lvl    =  self._get_data( 'hp5_lvl'  )
+        self.mp5        =  self._get_data( 'mp5'      )
+        self.mp5_lvl    =  self._get_data( 'mp5_lvl'  )
+        self.base_ats   =  self.ats
+
+        self.bonus_ats   =   [[bonustat.Bonus('lvlbonus', self.ats_lvl * helpers.bbm(self.lvl))]]
+        self.bonus_ad    =   []
+        self.bonus_ar    =   []
+        self.bonus_mr    =   []
+        self.bonus_hp    =   []
+        self.bonus_mp    =   []
+        self.bonus_hp5   =   []
+        self.bonus_mp5   =   []
+
+        self.current_hp  =   self.total_hp
+        self.current_mp  =   self.total_mp
 
 
-            pass
-
-        if True:        # simple dicts:     self.DATA, self.base, self.bonus, self.total, self.current
-            '''
-            self.DATA =  {  
-                            'cdr':       0,
-                            'ap':        0,
-                            'crit':      0,
-                            'critdmg':   2,
-                            'lifesteal': 0,
-                            'vamp':      0,
-                            'arP':       0,
-                            'mP':        0,
-                            'hspower':   0,
-                            'tenac':     0,
-                            **data.data[self.CHAMP.__class__.__name__]
-            }
-            self.base =  {
-                            'ats': self.DATA['ats'],
-                            'ad':  self.DATA['ad']  + self.DATA['ad_lvl']  * self.base_building_multiplier(self.lvl),
-                            'ar':  self.DATA['ar']  + self.DATA['ar_lvl']  * self.base_building_multiplier(self.lvl),
-                            'mr':  self.DATA['mr']  + self.DATA['mr_lvl']  * self.base_building_multiplier(self.lvl),
-                            'hp':  self.DATA['hp']  + self.DATA['hp_lvl']  * self.base_building_multiplier(self.lvl),
-                            'mp':  self.DATA['mp']  + self.DATA['mp_lvl']  * self.base_building_multiplier(self.lvl),
-                            'hp5': self.DATA['hp5'] + self.DATA['hp5_lvl'] * self.base_building_multiplier(self.lvl),
-                            'mp5': self.DATA['mp5'] + self.DATA['mp5_lvl'] * self.base_building_multiplier(self.lvl),
-            }
-            self.bonuses =  {
-                               'ats': [{'lvlbonus': self.DATA['ats_lvl'] * self.base_building_multiplier(self.lvl)}],
-                               'ad':  [],
-                               'ar':  [],
-                               'mr':  [],
-                               'hp':  [],
-                               'mp':  [],
-                               'hp5': [],
-                               'mp5': [],
-            }
-            self.totals =  {
-                            'ats': [],
-                            'ad':  [],
-                            'ar':  [],
-                            'mr':  [],
-                            'hp':  [],
-                            'mp':  [],
-                            'hp5': [],
-                            'mp5': [],
-            }
-            self.current =  {
-                            'current_hp': [],
-                            'current_mp': [],
-            }
-            '''
-
-            pass
 
 
-    #   put this in champion
-    # def base_building_multiplier(self, lvl):
-    #     return (lvl - 1) * (0.685 + 0.0175 * lvl)  
-    
+
+
 
 
