@@ -19,8 +19,7 @@ class EffectHandler(KnowsCHAMP):
     
     def handle_effect(self, effect):
 
-
-
+        self.handle_heal(effect)
         self.handle_dmg(effect)    
     def handle_dmg(self, effect):
         '''http://leagueoflegends.wikia.com/wiki/Armor_penetration'''
@@ -58,7 +57,6 @@ class EffectHandler(KnowsCHAMP):
             def_pen_flat    = xdmg.CHAMP.mr_pen_flat
             def_pen_percent = xdmg.CHAMP.mr_pen_percent
 
-
         if def_ >= 0:
             post_dmg = xdmg.amount * 100 / (100 + max(0, 
                 def_ - def_pen_percent * def_ - def_pen_flat))
@@ -67,7 +65,13 @@ class EffectHandler(KnowsCHAMP):
 
         self.CHAMP.current_hp -= post_dmg
 
-
+    def handle_heal(self, effect):
+        
+        if effect.heal:
+            # hp = self.CHAMP.current_hp
+            # amount = effect.heal.amount
+            # self.CHAMP.current_hp = min(hp + amount, self.CHAMP.total_hp)
+            self.CHAMP.current_hp += effect.heal.amount
 
 
 

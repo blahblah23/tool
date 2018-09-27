@@ -27,18 +27,12 @@ champ2.tgt = champ1
 subscribeThisLater()
 
 
-
-
-# time.timers.add(time_.Timer('placeholder', 
-#                             'begin', 
-#                             200, 
-#                             kassadin.E.cast))
-time_.Timer('placeholder', 
-            'cast placeholder kassadin?.E', 
-            200, 
-            kassadin.E.cast).go()
+time_.Timer(    'TEMP', 
+                'TEMP-cast kassadin.E', 
+                200, 
+                kassadin.Q.cast
+            ).go()
 time.go()
-
 
 # print(kassadin.E.STACKER.counter)
 # print(kassadin2.E.STACKER.counter)

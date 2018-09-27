@@ -25,6 +25,11 @@ class KnowsOWNER:
 
 class ABS_Skill(SuperInit, KnowsCHAMP):
     CASTIME = 250
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        skill = self.__class__.__name__.lower()
+        self.lvl = skilvl(skill, self.CHAMP.lvl, self.CHAMP.scheme)
+        self.lvlups = self.lvl - 1
 class ABS_P(ABS_Skill):
     pass
 class ABS_Q(ABS_Skill):
@@ -32,10 +37,7 @@ class ABS_Q(ABS_Skill):
 class ABS_W(ABS_Skill):
     pass
 class ABS_E(ABS_Skill):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.lvl = skilvl('e', self.CHAMP.lvl, self.CHAMP.scheme)
-        self.lvlups = self.lvl - 1
+    pass
 class ABS_R(ABS_Skill):
     pass
 

@@ -29,10 +29,11 @@ import cooldown
 class E(ABS_E):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.RAD      = 600
+        self.RANGE    = 600
+  #TODO self.SPEED    = ????
         self.ANGLE    = 80
-        self.cost     = 60 + 5 * (self.lvl - 1)
-        # TODO costs mana   and   6 STACKs 
+        self.cost     = 60 + 5 * self.lvlups
+        #TODO costs mana   and   6 STACKs 
         # make cost a property?
         self.CD       = cooldown.Cooldown(CHAMP  = self.CHAMP, 
                                           OWNER  = self, 

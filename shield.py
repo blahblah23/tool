@@ -18,16 +18,16 @@ class Shield:
     def __init__(self, owner, size, duration):
         self.owner = owner
         self.size = size
-        self.timer = Timer()
+        # self.timer = Timer()
         
     def go(self, target):
         target.shields.append(self)
         self.timer.go()
 
 
-take dmg
-activate
-resolve
+# take dmg
+# activate
+# resolve
 
 
 

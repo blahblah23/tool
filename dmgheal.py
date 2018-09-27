@@ -19,8 +19,8 @@ from globals_ import *
 class ABS_Dmg(KnowsCHAMP, KnowsOWNER):
     def __init__(self, amount, tags=[], **kwargs):
         super().__init__(**kwargs)
-        self.tags = tags
         self.amount  = amount
+        self.tags = tags
 
 class MDmg(ABS_Dmg):
     '''positional args need kywds := amount, tags, CHAMP, OWNER'''
@@ -39,13 +39,20 @@ class TDmg(ABS_Dmg):
 
 
 class Heal(KnowsCHAMP, KnowsOWNER):
-    def __init__(self, x, tags=[], **kwargs):
+    def __init__(self, amount, target=None, tags=[], **kwargs):
         super().__init__(**kwargs)
+        self.target = target
+        self.amount = amount
         self.tags = tags
-        self.x = x
-    def __call__(self, target):
-        target.takeHeal()
 
+    def apply(self, target=None):
+        if not target:
+            target = self.target
+        if not target:
+            raise Exception('NO TARGET')
+
+        # other heal logic here
+        target.current_hp += self.amount
 
 
 
