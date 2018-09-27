@@ -42,8 +42,9 @@ class Champion:
         self.scheme = scheme
 
         # self._init_stats()
-        self.REGEN          =         regen.Regen(CHAMP=self)
         self.STATS          =         stats.Stats(CHAMP=self)
+        
+        self.REGEN          =         regen.Regen(CHAMP=self)
         self.EFFECT_HANDLER = effecthandler.EffectHandler(CHAMP=self)
         self.ABILITY_USED   =      observer.AbilityUsed() ### this design seems bad
 
