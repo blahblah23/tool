@@ -5,14 +5,15 @@
 from globals_ import *
 import time_
 
+
+
 class Cooldown(KnowsCHAMP, KnowsOWNER):
-    def __init__(self, length, **kwargs):
+    def __init__(self, name, length, **kwargs):
         super().__init__(**kwargs)
         self.ready = True
-        self.timer = time_.Timer('kassadin?.E.cd', 
-                                 'cd-refresh kassadin?.E',
-                                 length, 
-                                 self.refresh)
+        self.timer = time_.Timer(name   = name, 
+                                 length = length, 
+                                 method = self.refresh)
 
     def trigger(self):
         self.ready = False
@@ -20,6 +21,7 @@ class Cooldown(KnowsCHAMP, KnowsOWNER):
     def refresh(self):
         self.ready = True
         self.timer.stop()
+        # this might raise exception when trying to refresh if already ready
 
 
 

@@ -5,55 +5,54 @@
 
 
 from globals_ import *
-import time
 import cooldown
 import shield
 from dmgheal import MDmg
-from effect import Effect
+
+
+
 
 class Q(ABS_Q):
+
+    SPEED = 1400
+    RAD   = 650
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.SPEED    = 1400
-        self.RAD      = 650
         self.cost     = 70 + 5 * self.lvlups
         # make cost a property?
-        self.CD       = cooldown.Cooldown(CHAMP  = self.CHAMP, 
-                                          OWNER  = self, 
-                                          length = 900) 
-        self.castable = True
+        
+        self.CD = cooldown.Cooldown(CHAMP  = self.CHAMP, 
+                                    OWNER  = self,
+                                    # name   = '{:15}{}.Q'.format('cd-refresh', str(self.CHAMP)), 
+                                    name   = ['cd-refresh', str(self.CHAMP) + '.Q'], 
+                                    length = 9000)
+        self._mdmg = MDmg(CHAMP  = self.CHAMP, 
+                          OWNER  = self, 
+                          target = None,
+                          amount = None, 
+                          tags   = ['ability'])
+        self._shield = shield.MShield(CHAMP  = self.CHAMP, 
+                                      OWNER  = self, 
+                                      target = self.CHAMP,
+                                      amount = 1,
+                                      length = 1500)
     
-    def get_effect(self):
-        return Effect(
-            CHAMP = self.CHAMP,
-            OWNER = self,
-            mdmg  = self.mdmg,
-            slow  = None,
-        )
     def cast(self):
         self.CD.trigger()
-        # cd     time.Timer('kassadin?.E.cd', 500, )
         self.CHAMP.current_mp -= self.cost
-        shield.Shield(self.CHAMP, self.shield, 1500)
-        self.CHAMP.tgt.EFFECT_HANDLER.handle_effect(self.get_effect())
-
-    @property
-    def dmg(self):
-        return 65 + 30 * self.lvlups + 0.7 * self.CHAMP.ap
+        self.mdmg.apply()
+        self.shield.apply()
 
     @property
     def mdmg(self):
-        # doesnt need to return more than one instance ever?
-        return MDmg(
-            CHAMP  = self.CHAMP, 
-            OWNER  = self, 
-            amount = self.dmg, 
-            tags   = ['ability']
-        )
-
+        self._mdmg.target = self.CHAMP.target
+        self._mdmg.amount = 65 + 30 * self.lvlups + 0.7 * self.CHAMP.ap
+        return self._mdmg
     @property
     def shield(self):
-        return 60 + 25 * self.lvlups + 0.3 * self.CHAMP.ap
+        self._shield.amount = 60 + 25 * self.lvlups + 0.3 * self.CHAMP.ap
+        return self._shield
 
 # Q
 # tgt range: 650 

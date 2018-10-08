@@ -10,7 +10,10 @@ from importlib import import_module
 # from components.general import *
 from champ_names import champ_names_for_packages
 
-
+# class Str:
+#     def __str__(self):
+#         return '{}{}'.format(self.__class__.__name__, hex(id(self)))
+#         return '{}{}'.format(self.__class__.__name__, self.ID)
 class SuperInit:
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -40,6 +43,7 @@ class ABS_E(ABS_Skill):
     pass
 class ABS_R(ABS_Skill):
     pass
+
 
 def skilvl(skill, champlvl, scheme):
     scheme = scheme.lower()

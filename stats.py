@@ -30,6 +30,15 @@ class Total_DXR:
         return (getattr(obj, 'base_' + self.attr_name) 
                 + sum( [bonus.value for bonus 
                 in getattr(obj, 'bonus_' + self.attr_name)]))
+class TotalAts_DXR:
+    def __init__(self, attr_name):
+        self.attr_name = attr_name
+    
+    def __get__(self, obj, type=None):
+        
+        return (getattr(obj, 'base_' + self.attr_name) 
+                * (1 + sum( [bonus.value for bonus 
+                in getattr(obj, 'bonus_' + self.attr_name)])))
 class CurrentHp_DXR:
     def __get__(self, obj, type=None):
         return obj._current_hp
@@ -71,7 +80,7 @@ class Stats(KnowsCHAMP):
         base_hp5    =   Base_DXR('hp5')
         base_mp5    =   Base_DXR('mp5')
 
-        total_ats   =   Total_DXR('ats')
+        total_ats   =   TotalAts_DXR('ats')
         total_ad    =   Total_DXR('ad')
         total_ar    =   Total_DXR('ar')
         total_mr    =   Total_DXR('mr')
@@ -115,8 +124,9 @@ class Stats(KnowsCHAMP):
         self.autoclass  =  self._get_data( 'autoclass')
         self.ms         =  self._get_data( 'ms'       )
         self.range      =  self._get_data( 'range'    )
-        self.ats        =  self._get_data( 'ats'      )
+        self.ats        =  self._get_data( 'ats'      ) / 1000
         self.ats_lvl    =  self._get_data( 'ats_lvl'  )
+        # TODO some champs have innate bonus ats at lvl 1???
         self.ad         =  self._get_data( 'ad'       )
         self.ad_lvl     =  self._get_data( 'ad_lvl'   )
         self.ar         =  self._get_data( 'ar'       )
@@ -133,7 +143,7 @@ class Stats(KnowsCHAMP):
         self.mp5_lvl    =  self._get_data( 'mp5_lvl'  )
         self.base_ats   =  self.ats
 
-        self.bonus_ats   =   [[bonustat.Bonus('lvlbonus', self.ats_lvl * helpers.bbm(self.lvl))]]
+        self.bonus_ats   =   [bonustat.Bonus('lvlbonus', self.ats_lvl * helpers.bbm(self.lvl))]
         self.bonus_ad    =   []
         self.bonus_ar    =   []
         self.bonus_mr    =   []

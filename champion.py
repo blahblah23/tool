@@ -25,29 +25,37 @@ def champ_decorator(cls):
 from globals_ import *
 import observer
 import stats
-import effecthandler
 import regen
-
+import auto
 
 class Champion:
     champID = [0, 2, 3, 4, 5]
+    autoclass_map = {'melee': auto.AutoMelee, 'ranged': auto.AutoRanged}
 
-    def __init__(self, lvl, scheme, tgt=None, **kwargs):
+    def __init__(self, lvl, scheme, target=None, **kwargs):
         super().__init__(**kwargs)
 
         allChamps.append(self)
         self.ID = self.champID.pop(0)
         self.lvl = lvl
-        self.tgt = tgt
+        self.target = target
         self.scheme = scheme
 
-        # self._init_stats()
+
+        self.shields  = []
+        self.pshields = []
+        self.mshields = []
+        
+        self.onhits = []
+
+
         self.STATS          =         stats.Stats(CHAMP=self)
         
-        self.REGEN          =         regen.Regen(CHAMP=self)
-        self.EFFECT_HANDLER = effecthandler.EffectHandler(CHAMP=self)
+        # self.REGEN          =         regen.Regen(CHAMP=self)
         self.ABILITY_USED   =      observer.AbilityUsed() ### this design seems bad
 
+
+        self.AUTO = self.autoclass_map[self.autoclass](CHAMP = self)
         self.P = self._load_skill('p')
         self.Q = self._load_skill('q')
         self.W = self._load_skill('w')

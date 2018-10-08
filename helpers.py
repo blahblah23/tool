@@ -12,5 +12,16 @@ def bbm(lvl):
 
 
 
+def round_recurse(new, oldnum, recursion=0):
+    if round(new, recursion) != oldnum:
+        return round(new, recursion)
+    round_recurse(new, oldnum, recursion + 1)
+    # this can cause some weirdness when the new is rounded 
+    # but the oldnum was rounded to a decimal
+
+
+
+
+
 
 

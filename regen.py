@@ -31,22 +31,17 @@ class Regen(KnowsCHAMP):
                                   amount = self.CHAMP.total_hp5 / 10,
                                   target = self.CHAMP,
                                   tags   = ['regen'],)
+    
+    
     def proc(self):
         self.timer.reset()
         self.heal.apply()
-        # self.CHAMP.EFFECT_HANDLER.handle_effect(self.get_effect())
-
     @property
     def heal(self):
         # update true heal amount
         self._heal.amount = self.CHAMP.total_hp5 / 10
         return self._heal
 
-    def get_effect(self):
-        return Effect(
-            CHAMP = self.CHAMP,
-            OWNER = self,
-            heal  = self.heal)
 
 
 

@@ -19,26 +19,50 @@ import time_
 
 time = time_.Time()
 
-kassadin = champ1 = Kassadin(lvl=11, scheme='qweqw')
+kassadin0 = champ1 = Kassadin(lvl=11, scheme='qweqw')
 kassadin2 = champ2 = Kassadin(lvl=8, scheme='qweeq')
-champ1.tgt = champ2
-champ2.tgt = champ1
+champ1.target = champ2
+champ2.target = champ1
 
 subscribeThisLater()
 
+# print(kassadin0.base_ats)
+# print(kassadin0.bonus_ats)
+# print(kassadin0.total_ats)
+print(kassadin2.current_hp)
 
-time_.Timer(    'TEMP', 
-                'TEMP-cast kassadin.E', 
-                200, 
-                kassadin.Q.cast
+time_.Timer(['TEMP-cast', 'kassadin0.E'], 
+            200, 
+            kassadin0.W.cast
+            # kassadin0.AUTO.cast
+            ).go()
+time_.Timer(['TEMP-auto', 'kassadin0.E'], 
+            1000, 
+            kassadin0.AUTO.cast
             ).go()
 time.go()
+
+
+# time.printall()
+
+print(kassadin2.current_hp)
+
+
+
+############
+# TODO using @classmethod allows to call a method without needing an instance 
+############
+
+
+
+
 
 # print(kassadin.E.STACKER.counter)
 # print(kassadin2.E.STACKER.counter)
 
-# kassadin.q()
-# kassadin2.q()
+# kassadin.Q.cast()
+# pprint(kassadin2.current_hp)
+# kassadin2.Q.cast()
 # kassadin2.q()
 
 # kassadin2.q()
@@ -67,6 +91,14 @@ time.go()
 
 # pprint(kassadin2.current_hp)
 # pprint(kassadin2.current_mp)
+
+
+
+
+
+
+
+
 
 
 
