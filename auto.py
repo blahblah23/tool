@@ -43,8 +43,7 @@ class Auto(KnowsCHAMP):
                                     name   = ['cd-refresh', str(self.CHAMP) + '.AUTO'], 
                                     length = self.cd_length) 
         self._pdmg = dmgheal.PDmg(CHAMP  = self.CHAMP, 
-                                  OWNER  = self, 
-                                  target = None,
+                                  OWNER  = self,
                                   amount = None, 
                                   tags   = {'auto'})
     def cast(self):

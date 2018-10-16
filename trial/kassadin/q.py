@@ -27,8 +27,7 @@ class Q(ABS_Q):
                                     name   = ['cd-refresh', str(self.CHAMP) + '.Q'], 
                                     length = 9000)
         self._mdmg = MDmg(CHAMP  = self.CHAMP, 
-                          OWNER  = self, 
-                          target = None,
+                          OWNER  = self,
                           amount = None, 
                           tags   = {'ability'})
         self._shield = shield.MShield(CHAMP  = self.CHAMP, 

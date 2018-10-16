@@ -19,7 +19,8 @@ from globals_ import *
 class ABS_Dmg(KnowsCHAMP, KnowsOWNER):
     def __init__(self, amount, target=None, tags=set(), **kwargs):
         super().__init__(**kwargs)
-        self.target = target
+        if target == None: self.target = self.CHAMP.target
+        else:              self.target = target
         self.amount = amount
         self.tags = tags
 

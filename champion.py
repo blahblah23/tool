@@ -27,6 +27,7 @@ import observer
 import stats
 import regen
 import auto
+import effecthandler
 
 class Champion:
     champID = [0, 2, 3, 4, 5]
@@ -54,7 +55,7 @@ class Champion:
         
         # self.REGEN          =         regen.Regen(CHAMP=self)
         self.ABILITY_USED   =      observer.AbilityUsed() ### this design seems bad
-
+        # self.EFFECT_HANDLER = effecthandler.EffectHandler(CHAMP=self)
 
         self.AUTO = self.autoclass_map[self.autoclass](CHAMP = self)
         self.P = self._load_skill('p')
