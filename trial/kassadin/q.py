@@ -24,18 +24,17 @@ class Q(ABS_Q):
         
         self.CD = cooldown.Cooldown(CHAMP  = self.CHAMP, 
                                     OWNER  = self,
-                                    # name   = '{:15}{}.Q'.format('cd-refresh', str(self.CHAMP)), 
                                     name   = ['cd-refresh', str(self.CHAMP) + '.Q'], 
                                     length = 9000)
         self._mdmg = MDmg(CHAMP  = self.CHAMP, 
                           OWNER  = self, 
                           target = None,
                           amount = None, 
-                          tags   = ['ability'])
+                          tags   = {'ability'})
         self._shield = shield.MShield(CHAMP  = self.CHAMP, 
                                       OWNER  = self, 
                                       target = self.CHAMP,
-                                      amount = 1,
+                                      amount = None,
                                       length = 1500)
     
     def cast(self):

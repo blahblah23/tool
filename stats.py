@@ -54,6 +54,10 @@ class CurrentMp_DXR:
     def __get__(self, obj, type=None):
         return obj._current_mp
     def __set__(self, obj, value):
+        if value < 0:
+            raise Exception('hey not enough mana')
+        if value >= obj.total_mp:
+            value = obj.total_mp
         obj._current_mp = value
 class ArPenFlat_DXR:
     def __get__(self, obj, type=None):

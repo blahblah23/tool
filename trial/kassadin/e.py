@@ -20,7 +20,6 @@ from stack import Stacker, CoX
 from dmgheal import MDmg
 from effect import Effect
 from slow import Slow
-import time
 import cooldown
 
 
@@ -45,18 +44,33 @@ class E(ABS_E):
                                     OWNER  = self, 
                                     name   = ['cd-refresh', str(self.CHAMP) + '.E'],
                                     length = 5000) 
-        self.STACKER = CoX(self.CHAMP, 
-                            self, 
-                            6, 
-                            [self.setCastable, [True]])
+        self.STACKER = CoX(CHAMP = self.CHAMP, 
+                           OWNER = self, 
+                           MAX = 6, 
+                           on_max = [self.setCastable, [True]])
         self._mdmg = MDmg(CHAMP  = self.CHAMP, 
                           OWNER  = self, 
                           target = None,
                           amount = None, 
-                          tags   = ['ability', 'aoe'])
+                          tags   = {'ability', 'aoe'})
         
         ###### subscribe STACKER to all ABILITY_USE
         toSubscribe.append([self.STACKER, getAllChampAbilityUseComponents]) 
+    
+    
+    def cast(self):
+        self.CD.trigger()
+        self.CHAMP.current_mp -= self.cost
+        self.mdmg.apply()
+        self.STACKER.reset()
+        
+    def setCastable(self, value):
+        self.castable = value
+
+
+    
+    
+    
     @property
     def mdmg(self):
         self._mdmg.target = self.CHAMP.target
@@ -69,15 +83,8 @@ class E(ABS_E):
             OWNER = self,
             slow  = 0.50 + 0.10 * self.lvlups,
         )
-    def cast(self):
-        self.CD.trigger()
-        self.CHAMP.current_mp -= self.cost
-        self.mdmg.apply()
-        self.STACKER.reset()
-    def setCastable(self, value):
-        self.castable = value
-
-
+    
+    
 
 
 # passive: self get STACK on TODO nearby TODO abil use, max 6

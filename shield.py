@@ -28,9 +28,10 @@ class Shield(KnowsCHAMP, KnowsOWNER):
     current_hp = CurrentHp_DXR()
 
     def __init__(self, amount, length, target, **kwargs):
+        # TODO SHOULDNT TAKE AMOUNT AS PARAMETER????
         super().__init__(**kwargs)
         self.amount = amount
-        self.current_hp = amount
+        # self.current_hp = amount
         self.target = target
         self.timer = time_.Timer('shield-expire {}'.format(self.target),
                                  length, 

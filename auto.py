@@ -33,7 +33,6 @@ class Auto(KnowsCHAMP):
 
         self.on_land = []
         
-        # self.castimer = time_.Timer(name   = 'auto-cast {}'.format(self.CHAMP),
         self.castimer = time_.Timer(name   = ['auto-cast', str(self.CHAMP) + '.AUTO'],
                                     length = self.cast_length,
                                     method = self.castimer_method)
@@ -41,14 +40,13 @@ class Auto(KnowsCHAMP):
 
         self.CD = cooldown.Cooldown(CHAMP  = self.CHAMP, 
                                     OWNER  = self,
-                                    # name   = '{:15}{}.Auto'.format('cd-refresh', str(self.CHAMP)), 
                                     name   = ['cd-refresh', str(self.CHAMP) + '.AUTO'], 
                                     length = self.cd_length) 
         self._pdmg = dmgheal.PDmg(CHAMP  = self.CHAMP, 
                                   OWNER  = self, 
                                   target = None,
                                   amount = None, 
-                                  tags   = ['auto'])
+                                  tags   = {'auto'})
     def cast(self):
         self.castimer.go()
     def reset(self):
@@ -81,13 +79,14 @@ class AutoMelee(Auto):
         self.pdmg.apply()
         for thing in self.on_land:
             thing()
+    def __str__(self):
+        return 'AutoMelee{}'.format('')
 
 
 class AutoRanged(Auto):
     def __init__(self, **kwargs):
         self.castimer_method = self.send
         super().__init__(**kwargs)
-        # self.sendtimer = time_.Timer(name    = 'auto-send {}'.format(self.CHAMP),
         self.sendtimer = time_.Timer(name    = ['auto-send', str(self.CHAMP) + '.AUTO'],
                                      length  = 250,
                                      method  = self.land)
@@ -101,6 +100,9 @@ class AutoRanged(Auto):
         for thing in self.on_land:
             thing()
 
+
+    def __str__(self):
+        return 'AutoRanged{}'.format('')
 #seems that if u get an ats buff mid cast
 #   before the new cast_length; the new cast_length is used normally
 #   after the new cast_length; the auto fires instantly

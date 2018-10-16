@@ -47,6 +47,7 @@ class Champion:
         self.mshields = []
         
         self.onhits = []
+        self.dmg_reductions= []
 
 
         self.STATS          =         stats.Stats(CHAMP=self)

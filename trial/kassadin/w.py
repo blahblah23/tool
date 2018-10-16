@@ -6,8 +6,8 @@
 from globals_ import *
 import cooldown
 import time_
-from dmgheal import MDmg
-
+import dmgheal
+import champion
 
 class W(ABS_W):
 
@@ -18,26 +18,30 @@ class W(ABS_W):
 
         self.CD = cooldown.Cooldown(CHAMP  = self.CHAMP, 
                                     OWNER  = self,
-                                    # name   = '{:15}{}.W'.format('cd-refresh', str(self.CHAMP)), 
                                     name   = ['cd-refresh', str(self.CHAMP) + '.W'], 
                                     length = 7000) 
-        # self.duration = time_.Timer(name   = '{:15}{}.W'.format('buff-duration', str(self.CHAMP)), 
         self.duration = time_.Timer(name   = ['buff-duration', str(self.CHAMP) + '.W'], 
                                     length = 5500, 
                                     method = self.buff_active,
                                     args   = [False])
 
-        self._passive_mdmg = MDmg(CHAMP  = self.CHAMP, 
-                                  OWNER  = self, 
-                                  target = None,
-                                  amount = None, 
-                                  tags   = ['ability'])
-        self._active_mdmg = MDmg(CHAMP  = self.CHAMP, 
-                                 OWNER  = self, 
-                                 target = None,
-                                 amount = None, 
-                                 tags   = ['ability'])
-        if self.lvl > 0:
+        self._passive_mdmg = dmgheal.MDmg(CHAMP  = self.CHAMP, 
+                                          OWNER  = self, 
+                                          target = None,
+                                          amount = None, 
+                                          tags   = {'ability'})
+        self._active_mdmg = dmgheal.MDmg(CHAMP  = self.CHAMP, 
+                                         OWNER  = self, 
+                                         target = None,
+                                         amount = None, 
+                                         tags   = {'ability'})
+        self._managain = dmgheal.Managain(CHAMP  = self.CHAMP, 
+                                          OWNER  = self, 
+                                          target = self.CHAMP,
+                                          amount = None)
+
+
+        if self.lvl > 0:   # dont like this much
             self.CHAMP.AUTO.on_land.append(self.passive_mdmg.apply)
 
 
@@ -47,16 +51,17 @@ class W(ABS_W):
         self.duration.go()
         self.buff_active(True)
 
-    def active_apply(self):
+    def apply_active(self):
         self.active_mdmg.apply()
+        self.managain.apply()
         self.duration.call()
         self.CD.trigger()
 
     def buff_active(self, value):
         onlands = self.CHAMP.AUTO.on_land
         passive = self.passive_mdmg.apply
-        active  = self.active_apply
-        print('before:', onlands)
+        active  = self.apply_active
+        # print('before:', onlands)
         if value:
             assert onlands.count(passive) == 1
             onlands.remove(passive)
@@ -68,7 +73,7 @@ class W(ABS_W):
             assert active not in onlands
             onlands.append(passive)
             assert onlands.count(passive) == 1
-        print('after:', onlands)
+        # print('after:', onlands)
 
     @property
     def passive_mdmg(self):
@@ -80,8 +85,16 @@ class W(ABS_W):
         self._active_mdmg.target = self.CHAMP.target
         self._active_mdmg.amount = 40 + 25 * self.lvlups + 0.8 * self.CHAMP.ap
         return self._active_mdmg
+    @property
+    def managain(self):
+        amt = (0.04 + 0.01 * self.lvlups) * (self.CHAMP.total_mp - self.CHAMP.current_mp)
+        if isinstance(self.CHAMP.target, champion.Champion):
+            self._managain.amount = amt * 5 
+        else: self._managain.amount = amt
+        return self._managain
 
-
+    def __str__(self):
+        return 'W{}'.format('')
 
 
 
@@ -108,4 +121,10 @@ class W(ABS_W):
 # pending for test: Ws relationship with dodge, parry, block, and blind.
 # the passive dmg affect structures but active one wont.
 # sShield blocks active dmg but not passive one.
+
+
+
+
+
+
 

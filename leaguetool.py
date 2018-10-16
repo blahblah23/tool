@@ -9,7 +9,8 @@ from globals_ import *
 # from globs import pprint
 
 # import trial.kassadin.kassadin
-from trial.kassadin.kassadin import Kassadin 
+from trial.kassadin.kassadin import Kassadin
+from trial.yasuo.yasuo import Yasuo
 # Kassadin = trial.kassadin.kassadin.Kassadin
 
 import helpers
@@ -19,8 +20,9 @@ import time_
 
 time = time_.Time()
 
-kassadin0 = champ1 = Kassadin(lvl=11, scheme='qweqw')
+kassadin0 = champ1 = Kassadin(lvl=18, scheme='qweqw')
 kassadin2 = champ2 = Kassadin(lvl=8, scheme='qweeq')
+yasuo0 = champ3 = Yasuo(lvl=18, scheme='qewqw')
 champ1.target = champ2
 champ2.target = champ1
 
@@ -31,22 +33,20 @@ subscribeThisLater()
 # print(kassadin0.total_ats)
 print(kassadin2.current_hp)
 
-time_.Timer(['TEMP-cast', 'kassadin0.E'], 
-            200, 
+time_.Timer(['TEMP-cast', 'kassadin0'], 
+            0, 
             kassadin0.W.cast
             # kassadin0.AUTO.cast
             ).go()
-time_.Timer(['TEMP-auto', 'kassadin0.E'], 
-            1000, 
+time_.Timer(['TEMP-cast', 'kassadin0'], 
+            0, 
             kassadin0.AUTO.cast
             ).go()
 time.go()
 
 
-# time.printall()
 
 print(kassadin2.current_hp)
-
 
 
 ############

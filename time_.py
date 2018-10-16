@@ -13,8 +13,6 @@ import helpers
 class Time:
 
     def __init__(self):
-        # self.pr_t = []
-        # self.pr_msg = []
         self.prev_num = 0
         self.prev_t = 0
         self.t = 0
@@ -48,8 +46,6 @@ class Time:
             print('{:9}{}'.format(str(time) + ':', self.pr_msg[idx]))
 
 
-
-
 class Timer:
     def __init__(self, name, length, method, args=[], persist=False):
         self.name = name
@@ -67,14 +63,6 @@ class Timer:
     def stop(self):
         self.time.timers.discard(self)
         # discard from set does nothing if the element isnt there
-    # def pr(self, x=''):
-    #     t = self.time.t
-    #     msg = '{:6}{}'.format(x, self.name)
-
-    #     self.time.pr_t.append(t)
-    #     self.time.pr_msg.append(msg)
-        
-    #     pass
     def pr(self, x=''):
         num = self.time.t
 
@@ -88,14 +76,14 @@ class Timer:
 
 
 
-        msg = '{:<9}{:9}{:20}{}'.format(num, x, self.name[0], self.name[1])
-        # msg = '{:<20}{:6}{}'.format(num, x, self.name)
+        msg = '{:<9}{:>15}  {:7}{}'.format(num, self.name[0], x, self.name[1])
         print(msg)
 
         self.time.prev_t = self.time.t
         self.time.prev_num = num
-
-
+    def reset(self):
+        self.pr('reset ')
+        self.start = self.time.t
     def call(self):
         self.pr('end ')
         self.method(*self.args)

@@ -5,9 +5,6 @@
 from pprint import pprint
 import os
 from importlib import import_module
-# import components.general.observer
-# import components.general.stack
-# from components.general import *
 from champ_names import champ_names_for_packages
 
 # class Str:
@@ -33,6 +30,8 @@ class ABS_Skill(SuperInit, KnowsCHAMP):
         skill = self.__class__.__name__.lower()
         self.lvl = skilvl(skill, self.CHAMP.lvl, self.CHAMP.scheme)
         self.lvlups = self.lvl - 1
+    def drop_stack(self):
+        pass
 class ABS_P(ABS_Skill):
     pass
 class ABS_Q(ABS_Skill):
@@ -81,9 +80,6 @@ if __name__ == '__main__':
     # print(dir(Components.General))
     print([x.lower() for x in champ_names_word_only])
     pass
-
-
-
 
 
 

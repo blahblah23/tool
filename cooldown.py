@@ -25,7 +25,7 @@ class Cooldown(KnowsCHAMP, KnowsOWNER):
 
 
 
-class StatiCooldown(KnowsCHAMP, KnowsOWNER):
+class StatiCooldown(Cooldown):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
     
@@ -42,9 +42,6 @@ class StatiCooldown(KnowsCHAMP, KnowsOWNER):
 # resolve
 # lower
 # notify
-
-
-
 
 
 
